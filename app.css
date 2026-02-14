@@ -150,6 +150,46 @@ body {
     opacity: 0.95;
 }
 
+.site-header .header-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.site-header .header-layout > :first-child {
+    flex: 1;
+    text-align: center;
+}
+
+.site-header .header-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.site-header .manage-projects-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.6rem;
+    border-radius: 999px;
+    border: none;
+    background-color: var(--white-pure);
+    color: var(--pink-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.site-header .manage-projects-btn:hover {
+    background-color: #fff5f8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
 .main-nav {
     background-color: var(--white-pure);
     padding: 1.2rem 0;
@@ -203,6 +243,19 @@ body {
     margin-bottom: 2.5rem;
 }
 
+.view-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.view-label {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
 .category-btn {
     background-color: var(--white-pure);
     border: 2px solid var(--border-grey);
@@ -224,6 +277,31 @@ body {
     background-color: var(--pink-primary);
     color: var(--white-pure);
     border-color: var(--pink-primary);
+}
+
+.category-filters select {
+    appearance: none;
+    background-color: var(--white-pure);
+    border: 2px solid var(--border-grey);
+    color: var(--text-dark);
+    padding: 0.6rem 2.6rem 0.6rem 1.4rem;
+    margin: 0.4rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%239c27b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='1 1 6 6 11 1'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.7rem;
+}
+
+.category-filters select:hover,
+.category-filters select:focus {
+    border-color: var(--pink-primary);
+    color: var(--pink-primary);
+    outline: none;
 }
 
 .quilt-gallery {
@@ -289,7 +367,8 @@ body {
 .quilt-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 1rem;
 }
 
@@ -298,6 +377,7 @@ body {
     color: var(--text-dark);
     font-weight: 600;
     flex: 1;
+    min-width: 0;
 }
 
 .status-tag {
@@ -314,6 +394,10 @@ body {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.4rem;
+    justify-content: flex-end;
+    margin-left: auto;
+    text-align: right;
+    max-width: 50%;
 }
 
 .status-group .status-tag {
@@ -338,11 +422,6 @@ body {
 .status-charity {
     background-color: #e3f2fd;
     color: #1565c0;
-}
-
-.status-favorite {
-    background-color: #fff8e1;
-    color: #f9a825;
 }
 
 .quilt-description {

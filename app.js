@@ -16,6 +16,7 @@ function initializeApp() {
     displayCharityQuilts();
     displayFavorites();
     updateProjectListing();
+    handleViewSelect('favorites');
 }
 
 if (document.readyState === 'loading') {
@@ -29,11 +30,22 @@ function switchTab(tabName, clickedButton) {
     const buttons = document.querySelectorAll('.tab-button');
     const sections = document.querySelectorAll('.tab-content');
     
-    buttons.forEach(btn => btn.classList.remove('selected'));
+    if (buttons.length) {
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        const targetButton = clickedButton || Array.from(buttons).find(btn => {
+            const handler = btn.getAttribute('onclick');
+            return handler && handler.includes(`'${tabName}'`);
+        });
+        if (targetButton) {
+            targetButton.classList.add('selected');
+        }
+    }
     sections.forEach(sec => sec.classList.remove('visible'));
     
-    clickedButton.classList.add('selected');
-    document.getElementById(tabName + '-section').classList.add('visible');
+    const targetSection = document.getElementById(tabName + '-section');
+    if (targetSection) {
+        targetSection.classList.add('visible');
+    }
     
     if (tabName === 'view') {
         displayQuilts();
@@ -45,6 +57,14 @@ function switchTab(tabName, clickedButton) {
     } else if (tabName === 'favorites') {
         displayFavorites();
     }
+}
+
+function handleViewSelect(viewName) {
+    const select = document.getElementById('view-select');
+    if (select && viewName) {
+        select.value = viewName;
+    }
+    switchTab(viewName, null);
 }
 
 // Category filtering
@@ -213,9 +233,6 @@ function renderQuiltGallery(quilts, galleryId, emptyId, emptyMessage) {
         const charityTag = quilt.isCharity
             ? '<span class="status-tag status-charity">Charity</span>'
             : '';
-        const favoriteTag = quilt.isFavorite
-            ? '<span class="status-tag status-favorite">&#9733; Favorite</span>'
-            : '';
         
         const favoriteLabel = quilt.isFavorite ? 'Unfavorite' : 'Favorite';
         const favoriteIcon = quilt.isFavorite ? '&#9733;' : '&#9734;';
@@ -230,7 +247,6 @@ function renderQuiltGallery(quilts, galleryId, emptyId, emptyMessage) {
                         <div class="status-group">
                             <span class="status-tag status-${quilt.category}">${getCategoryLabel(quilt.category)}</span>
                             ${charityTag}
-                            ${favoriteTag}
                         </div>
                     </div>
                     ${descSnippet ? `<p class="quilt-description">${sanitizeText(descSnippet)}</p>` : ''}
@@ -333,6 +349,10 @@ function showDetails(quiltId) {
         ? `<p><strong>Due Date:</strong> ${formatDateDisplay(quilt.deadline)}</p>`
         : '';
     
+    const completedDateHtml = quilt.completedDate
+        ? `<p><strong>Completed Date:</strong> ${formatDateDisplay(quilt.completedDate)}</p>`
+        : '';
+    
     const favoriteHtml = quilt.isFavorite
         ? '<p><strong>Favorite:</strong> Yes</p>'
         : '';
@@ -353,6 +373,7 @@ function showDetails(quiltId) {
         ${charityHtml}
         ${notesHtml}
         ${deadlineHtml}
+        ${completedDateHtml}
         ${createdHtml}
     `;
     
@@ -375,6 +396,10 @@ function openQuiltEditor() {
     document.getElementById('photo-display').innerHTML = '';
     document.getElementById('project-charity').checked = false;
     document.getElementById('project-favorite').checked = false;
+    const completedDateInput = document.getElementById('completed-date');
+    if (completedDateInput) {
+        completedDateInput.value = '';
+    }
     document.getElementById('editor-panel').classList.remove('hidden');
     
     document.getElementById('editor-panel').scrollIntoView({ behavior: 'smooth' });
@@ -387,6 +412,10 @@ function closeQuiltEditor() {
     document.getElementById('photo-display').innerHTML = '';
     document.getElementById('project-charity').checked = false;
     document.getElementById('project-favorite').checked = false;
+    const completedDateInput = document.getElementById('completed-date');
+    if (completedDateInput) {
+        completedDateInput.value = '';
+    }
     isEditing = false;
     editingQuiltId = null;
 }
@@ -407,6 +436,10 @@ function startEdit(quiltId) {
     document.getElementById('deadline').value = quilt.deadline || '';
     document.getElementById('project-charity').checked = Boolean(quilt.isCharity);
     document.getElementById('project-favorite').checked = Boolean(quilt.isFavorite);
+    const completedDateInput = document.getElementById('completed-date');
+    if (completedDateInput) {
+        completedDateInput.value = quilt.completedDate || '';
+    }
     
     if (quilt.photo) {
         document.getElementById('photo-display').innerHTML = `<img src="${quilt.photo}" alt="Current photo">`;
@@ -444,6 +477,10 @@ function handleFormSubmit(event) {
     const isCharity = document.getElementById('project-charity').checked;
     const isFavorite = document.getElementById('project-favorite').checked;
     const existing = allQuilts.find(q => q.id === quiltId);
+    const completedDateInput = document.getElementById('completed-date');
+    const completedDate = completedDateInput
+        ? completedDateInput.value
+        : (existing ? existing.completedDate || '' : '');
     const timestamp = existing ? existing.timestamp : new Date().toISOString().split('T')[0];
     
     const quiltData = {
@@ -452,6 +489,7 @@ function handleFormSubmit(event) {
         category: category,
         notes: notes,
         deadline: deadline,
+        completedDate: completedDate,
         photo: null,
         timestamp: timestamp,
         isCharity: isCharity,

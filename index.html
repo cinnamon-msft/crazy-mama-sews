@@ -9,24 +9,28 @@
 <body>
     <div class="page-wrapper">
         <header class="site-header">
-            <div class="content-wrap">
-                <h1 class="site-title">🧵 Crazy Mama Sews</h1>
-                <p class="site-subtitle">Your Personal Quilt Project Manager</p>
+            <div class="content-wrap header-layout">
+                <div>
+                    <h1 class="site-title">🧵 Crazy Mama Sews</h1>
+                    <p class="site-subtitle">Your Personal Quilt Project Manager</p>
+                </div>
+                <div class="header-actions">
+                    <button class="manage-projects-btn" type="button" onclick="switchTab('admin')">Manage Projects</button>
+                </div>
             </div>
         </header>
 
         <div id="banner-container" class="banner-container" aria-live="polite"></div>
 
-        <nav class="main-nav">
-            <div class="content-wrap">
-                <button class="tab-button selected" onclick="switchTab('favorites', this)">Favorites</button>
-                <button class="tab-button" onclick="switchTab('view', this)">All Quilts</button>
-                <button class="tab-button" onclick="switchTab('admin', this)">Manage Projects</button>
-                <button class="tab-button" onclick="switchTab('charity', this)">Charity Quilts</button>
-            </div>
-        </nav>
-
         <main class="content-wrap">
+            <div class="category-filters view-select">
+                <label class="view-label" for="view-select">View</label>
+                <select id="view-select" onchange="handleViewSelect(this.value)">
+                    <option value="favorites" selected>Favorites</option>
+                    <option value="view">All Quilts</option>
+                    <option value="charity">Charity Quilts</option>
+                </select>
+            </div>
             <section id="view-section" class="tab-content">
                 <div class="category-filters">
                     <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
@@ -101,6 +105,11 @@
                         <div class="input-row">
                             <label for="deadline">Due Date (optional)</label>
                             <input type="date" id="deadline">
+                        </div>
+
+                        <div class="input-row">
+                            <label for="completed-date">Completed Date (optional)</label>
+                            <input type="date" id="completed-date">
                         </div>
 
                         <div class="input-row">
