@@ -10,6 +10,9 @@ A simple, easy-to-use website for tracking quilt projects. Keep track of complet
 - Track project status (Completed, In Progress, Due Soon)
 - Add descriptions and due dates
 - Edit or delete projects anytime
+- Mark quilts as charity projects
+- Favorite quilts and view them in a Favorites tab
+- See thumbnail previews in the Manage Projects list
 
 🎨 **Beautiful Gallery View**
 - Browse all your quilts in a visual gallery
@@ -35,6 +38,8 @@ A simple, easy-to-use website for tracking quilt projects. Keep track of complet
 3. Fill in the details:
    - **Project Name**: Give your quilt a name (required)
    - **Status**: Choose Completed, In Progress, or Due Soon
+   - **Charity Quilt**: Mark if the quilt is for donation (optional)
+   - **Favorite**: Add it to your favorites list (optional)
    - **Notes**: Add any details about the quilt
    - **Due Date**: Set a deadline (optional)
    - **Upload Photo**: Click "Choose File" to add a photo
@@ -45,6 +50,7 @@ A simple, easy-to-use website for tracking quilt projects. Keep track of complet
 1. Click the **"Browse Quilts"** tab
 2. Use the filter buttons (All, Completed, In Progress, Due Soon) to organize your view
 3. Click on any quilt card to see full details
+4. Use the **"Charity Quilts"** and **"Favorites"** tabs to view those lists
 
 ### Editing a Quilt
 

@@ -19,6 +19,8 @@
             <div class="content-wrap">
                 <button class="tab-button selected" onclick="switchTab('view', this)">Browse Quilts</button>
                 <button class="tab-button" onclick="switchTab('admin', this)">Manage Projects</button>
+                <button class="tab-button" onclick="switchTab('charity', this)">Charity Quilts</button>
+                <button class="tab-button" onclick="switchTab('favorites', this)">Favorites</button>
             </div>
         </nav>
 
@@ -33,6 +35,16 @@
 
                 <div id="quilt-display" class="quilt-gallery"></div>
                 <div id="empty-message" class="empty-state">No quilts to display. Start by adding your first project!</div>
+            </section>
+
+            <section id="charity-section" class="tab-content">
+                <div id="charity-display" class="quilt-gallery"></div>
+                <div id="charity-empty" class="empty-state">No charity quilts yet. Mark projects as charity to see them here.</div>
+            </section>
+
+            <section id="favorites-section" class="tab-content">
+                <div id="favorites-display" class="quilt-gallery"></div>
+                <div id="favorites-empty" class="empty-state">No favorites yet. Tap the star to save your favorites.</div>
             </section>
 
             <section id="admin-section" class="tab-content">
@@ -58,6 +70,17 @@
                                 <option value="completed">Completed</option>
                                 <option value="upcoming">Due Soon</option>
                             </select>
+                        </div>
+
+                        <div class="input-row checkbox-row">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="project-charity">
+                                Charity quilt
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="project-favorite">
+                                Mark as favorite
+                            </label>
                         </div>
 
                         <div class="input-row">
