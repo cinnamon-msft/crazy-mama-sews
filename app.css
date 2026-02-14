@@ -497,6 +497,7 @@ main.content-wrap > .tab-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 1.5rem;
     margin-bottom: 2.5rem;
     flex-wrap: wrap;
     gap: 1rem;
@@ -550,6 +551,7 @@ main.content-wrap > .tab-content {
     padding: 2.5rem;
     border-radius: 15px;
     box-shadow: var(--shadow-light);
+    margin-top: 1.5rem;
     margin-bottom: 2.5rem;
 }
 

@@ -50,7 +50,11 @@ function switchTab(tabName, clickedButton) {
     }
     const viewSelect = document.querySelector('.view-select');
     if (viewSelect) {
-        viewSelect.classList.toggle('hidden', tabName === 'admin');
+        viewSelect.classList.toggle('hidden', tabName === 'admin' || tabName === 'new-quilt');
+    }
+    const projectListing = document.getElementById('project-listing');
+    if (projectListing) {
+        projectListing.style.display = tabName === 'new-quilt' ? 'none' : '';
     }
     
     if (tabName === 'view') {
@@ -62,6 +66,8 @@ function switchTab(tabName, clickedButton) {
         displayCharityQuilts();
     } else if (tabName === 'favorites') {
         displayFavorites();
+    } else if (tabName === 'new-quilt') {
+        openQuiltEditor(false);
     }
 }
 
@@ -392,7 +398,11 @@ function closePopup() {
 }
 
 // Open quilt editor
-function openQuiltEditor() {
+function openQuiltEditor(shouldNavigate = true) {
+    if (shouldNavigate) {
+        switchTab('new-quilt');
+        return;
+    }
     isEditing = false;
     editingQuiltId = null;
     
@@ -451,6 +461,7 @@ function startEdit(quiltId) {
     const quilt = allQuilts.find(q => q.id === quiltId);
     if (!quilt) return;
     
+    switchTab('new-quilt');
     isEditing = true;
     editingQuiltId = quiltId;
     
@@ -562,6 +573,7 @@ function saveQuiltRecord(quiltData) {
     displayCharityQuilts();
     displayFavorites();
     updateProjectListing();
+    switchTab('admin');
 }
 
 // Toggle favorite status

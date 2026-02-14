@@ -65,9 +65,13 @@
             <section id="admin-section" class="tab-content">
                 <div class="admin-header">
                     <h2>Your Quilt Projects</h2>
-                    <button class="action-btn primary" onclick="openQuiltEditor()">+ New Quilt</button>
+                    <button class="action-btn primary" onclick="switchTab('new-quilt'); openQuiltEditor()">+ New Quilt</button>
                 </div>
 
+                <div id="project-listing" class="project-list"></div>
+            </section>
+
+            <section id="new-quilt-section" class="tab-content">
                 <div id="editor-panel" class="editor-container hidden">
                     <h3 id="editor-heading">Add Quilt Project</h3>
                     <form id="quilt-editor" onsubmit="handleFormSubmit(event)">
@@ -126,8 +130,6 @@
                         </div>
                     </form>
                 </div>
-
-                <div id="project-listing" class="project-list"></div>
             </section>
         </main>
 
