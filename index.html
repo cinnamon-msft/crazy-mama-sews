@@ -25,22 +25,7 @@
         <div id="banner-container" class="banner-container" aria-live="polite"></div>
 
         <main class="content-wrap">
-            <div class="category-filters view-select">
-                <label class="view-label" for="view-select">View</label>
-                <select id="view-select" onchange="handleViewSelect(this.value)">
-                    <option value="favorites" selected>Favorites</option>
-                    <option value="view">All Quilts</option>
-                    <option value="charity">Charity Quilts</option>
-                </select>
-            </div>
             <section id="view-section" class="tab-content">
-                <div class="category-filters">
-                    <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
-                    <button class="category-btn" onclick="filterByCategory('completed', this)">Completed</button>
-                    <button class="category-btn" onclick="filterByCategory('wip', this)">In Progress</button>
-                    <button class="category-btn" onclick="filterByCategory('upcoming', this)">Due Soon</button>
-                </div>
-
                 <div id="quilt-display" class="quilt-gallery"></div>
                 <div id="empty-message" class="empty-state">No quilts to display. Start by adding your first project!</div>
             </section>
@@ -51,16 +36,31 @@
             </section>
 
             <section id="favorites-section" class="tab-content visible">
-                <div class="category-filters">
+                <div id="favorites-display" class="quilt-gallery"></div>
+                <div id="favorites-empty" class="empty-state">No favorites yet. Tap the star to save your favorites.</div>
+            </section>
+
+            <div class="view-select">
+                <div class="category-filters view-filters">
+                    <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
+                    <button class="category-btn" onclick="filterByCategory('completed', this)">Completed</button>
+                    <button class="category-btn" onclick="filterByCategory('wip', this)">In Progress</button>
+                    <button class="category-btn" onclick="filterByCategory('upcoming', this)">Due Soon</button>
+                </div>
+                <div class="category-filters favorite-filters">
                     <button class="category-btn favorite-category-btn selected" onclick="filterFavoritesByCategory('all', this)">All</button>
                     <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('completed', this)">Completed</button>
                     <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('wip', this)">In Progress</button>
                     <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('upcoming', this)">Due Soon</button>
                 </div>
-
-                <div id="favorites-display" class="quilt-gallery"></div>
-                <div id="favorites-empty" class="empty-state">No favorites yet. Tap the star to save your favorites.</div>
-            </section>
+                <div class="category-filters view-dropdown">
+                    <select id="view-select" onchange="handleViewSelect(this.value)">
+                        <option value="favorites" selected>Favorites</option>
+                        <option value="view">All Quilts</option>
+                        <option value="charity">Charity Quilts</option>
+                    </select>
+                </div>
+            </div>
 
             <section id="admin-section" class="tab-content">
                 <div class="admin-header">

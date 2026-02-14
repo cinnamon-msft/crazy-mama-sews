@@ -16,7 +16,9 @@ function initializeApp() {
     displayCharityQuilts();
     displayFavorites();
     updateProjectListing();
-    handleViewSelect('favorites');
+    const hasFavorites = allQuilts.some(quilt => quilt.isFavorite);
+    const shouldShowAll = allQuilts.length > 0 && !hasFavorites;
+    handleViewSelect(shouldShowAll ? 'view' : 'favorites');
 }
 
 if (document.readyState === 'loading') {
@@ -481,6 +483,10 @@ function handlePhotoSelect(event) {
     if (fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
+            const editorPanel = document.getElementById('editor-panel');
+            if (editorPanel && editorPanel.classList.contains('hidden')) {
+                return;
+            }
             photoDisplay.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
         };
         reader.readAsDataURL(fileInput.files[0]);
@@ -551,6 +557,7 @@ function saveQuiltRecord(quiltData) {
     
     saveQuiltData();
     closeQuiltEditor();
+    resetQuiltEditorFields();
     displayQuilts();
     displayCharityQuilts();
     displayFavorites();
