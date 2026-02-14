@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crazy Mama Sews - Quilt Tracker</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="site-header">
+            <div class="content-wrap">
+                <h1 class="site-title">🧵 Crazy Mama Sews</h1>
+                <p class="site-subtitle">Your Personal Quilt Project Manager</p>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <div class="content-wrap">
+                <button class="tab-button selected" onclick="switchTab('view', this)">Browse Quilts</button>
+                <button class="tab-button" onclick="switchTab('admin', this)">Manage Projects</button>
+            </div>
+        </nav>
+
+        <main class="content-wrap">
+            <section id="view-section" class="tab-content visible">
+                <div class="category-filters">
+                    <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
+                    <button class="category-btn" onclick="filterByCategory('completed', this)">Completed</button>
+                    <button class="category-btn" onclick="filterByCategory('wip', this)">In Progress</button>
+                    <button class="category-btn" onclick="filterByCategory('upcoming', this)">Due Soon</button>
+                </div>
+
+                <div id="quilt-display" class="quilt-gallery"></div>
+                <div id="empty-message" class="empty-state">No quilts to display. Start by adding your first project!</div>
+            </section>
+
+            <section id="admin-section" class="tab-content">
+                <div class="admin-header">
+                    <h2>Your Quilt Projects</h2>
+                    <button class="action-btn primary" onclick="openQuiltEditor()">+ New Quilt</button>
+                </div>
+
+                <div id="editor-panel" class="editor-container hidden">
+                    <h3 id="editor-heading">Add Quilt Project</h3>
+                    <form id="quilt-editor" onsubmit="handleFormSubmit(event)">
+                        <input type="hidden" id="edit-id">
+                        
+                        <div class="input-row">
+                            <label for="project-title">Project Name *</label>
+                            <input type="text" id="project-title" required placeholder="e.g., Grandma's Wedding Quilt">
+                        </div>
+
+                        <div class="input-row">
+                            <label for="project-category">Status *</label>
+                            <select id="project-category" required>
+                                <option value="wip">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="upcoming">Due Soon</option>
+                            </select>
+                        </div>
+
+                        <div class="input-row">
+                            <label for="project-notes">Notes</label>
+                            <textarea id="project-notes" rows="5" placeholder="Describe your quilt project..."></textarea>
+                        </div>
+
+                        <div class="input-row">
+                            <label for="deadline">Due Date (optional)</label>
+                            <input type="date" id="deadline">
+                        </div>
+
+                        <div class="input-row">
+                            <label for="photo-upload">Upload Photo</label>
+                            <input type="file" id="photo-upload" accept="image/*" onchange="handlePhotoSelect(event)">
+                            <div id="photo-display" class="photo-preview"></div>
+                        </div>
+
+                        <div class="button-row">
+                            <button type="submit" class="action-btn primary">Save Project</button>
+                            <button type="button" class="action-btn secondary" onclick="closeQuiltEditor()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="project-listing" class="project-list"></div>
+            </section>
+        </main>
+
+        <div id="detail-popup" class="popup-overlay" onclick="if(event.target===this) closePopup()">
+            <div class="popup-box">
+                <button class="popup-close" onclick="closePopup()">&times;</button>
+                <div id="popup-content"></div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <div class="content-wrap">
+                <p>&copy; 2026 Crazy Mama Sews | Made with love and thread ❤️</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
