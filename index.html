@@ -15,17 +15,19 @@
             </div>
         </header>
 
+        <div id="banner-container" class="banner-container" aria-live="polite"></div>
+
         <nav class="main-nav">
             <div class="content-wrap">
-                <button class="tab-button selected" onclick="switchTab('view', this)">Browse Quilts</button>
+                <button class="tab-button selected" onclick="switchTab('favorites', this)">Favorites</button>
+                <button class="tab-button" onclick="switchTab('view', this)">All Quilts</button>
                 <button class="tab-button" onclick="switchTab('admin', this)">Manage Projects</button>
                 <button class="tab-button" onclick="switchTab('charity', this)">Charity Quilts</button>
-                <button class="tab-button" onclick="switchTab('favorites', this)">Favorites</button>
             </div>
         </nav>
 
         <main class="content-wrap">
-            <section id="view-section" class="tab-content visible">
+            <section id="view-section" class="tab-content">
                 <div class="category-filters">
                     <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
                     <button class="category-btn" onclick="filterByCategory('completed', this)">Completed</button>
@@ -42,7 +44,14 @@
                 <div id="charity-empty" class="empty-state">No charity quilts yet. Mark projects as charity to see them here.</div>
             </section>
 
-            <section id="favorites-section" class="tab-content">
+            <section id="favorites-section" class="tab-content visible">
+                <div class="category-filters">
+                    <button class="category-btn favorite-category-btn selected" onclick="filterFavoritesByCategory('all', this)">All</button>
+                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('completed', this)">Completed</button>
+                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('wip', this)">In Progress</button>
+                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('upcoming', this)">Due Soon</button>
+                </div>
+
                 <div id="favorites-display" class="quilt-gallery"></div>
                 <div id="favorites-empty" class="empty-state">No favorites yet. Tap the star to save your favorites.</div>
             </section>

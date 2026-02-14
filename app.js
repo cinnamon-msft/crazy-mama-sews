@@ -4,6 +4,7 @@ const STORAGE_KEY = 'crazymama_quilts';
 // Current state
 let allQuilts = [];
 let activeCategory = 'all';
+let favoriteCategory = 'all';
 let isEditing = false;
 let editingQuiltId = null;
 
@@ -42,11 +43,24 @@ function switchTab(tabName, clickedButton) {
 function filterByCategory(category, clickedButton) {
     activeCategory = category;
     
-    const buttons = document.querySelectorAll('.category-btn');
+    const buttons = document.querySelectorAll('.category-btn:not(.favorite-category-btn)');
     buttons.forEach(btn => btn.classList.remove('selected'));
     clickedButton.classList.add('selected');
     
     displayQuilts();
+}
+
+// Favorite category filtering
+function filterFavoritesByCategory(category, clickedButton) {
+    favoriteCategory = category;
+    
+    const buttons = document.querySelectorAll('.favorite-category-btn');
+    buttons.forEach(btn => btn.classList.remove('selected'));
+    if (clickedButton) {
+        clickedButton.classList.add('selected');
+    }
+    
+    displayFavorites();
 }
 
 // Load data from localStorage
@@ -76,6 +90,77 @@ function loadQuiltData() {
 // Save data to localStorage
 function saveQuiltData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(allQuilts));
+}
+
+// Banner notifications
+function ensureBannerContainer() {
+    let container = document.getElementById('banner-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'banner-container';
+        container.classList.add('banner-container');
+        const wrapper = document.querySelector('.page-wrapper') || document.body;
+        wrapper.insertBefore(container, wrapper.firstChild);
+    }
+    return container;
+}
+
+function showBanner(message, options = {}) {
+    const container = ensureBannerContainer();
+    container.innerHTML = '';
+    const banner = document.createElement('div');
+    banner.classList.add('banner');
+    const type = options.type || 'info';
+    if (['success', 'warning', 'info', 'error'].includes(type)) {
+        banner.classList.add(`banner-${type}`);
+    }
+
+    const text = document.createElement('span');
+    text.textContent = message;
+    banner.appendChild(text);
+
+    if (Array.isArray(options.actions) && options.actions.length > 0) {
+        const actions = document.createElement('div');
+        actions.classList.add('banner-actions');
+        options.actions.forEach(action => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.classList.add('banner-btn');
+            if (action.danger) {
+                button.classList.add('danger');
+            }
+            button.textContent = action.label;
+            button.addEventListener('click', () => {
+                if (typeof action.onClick === 'function') {
+                    action.onClick();
+                }
+            });
+            actions.appendChild(button);
+        });
+        banner.appendChild(actions);
+    }
+
+    container.appendChild(banner);
+    if (!Array.isArray(options.actions) || options.actions.length === 0) {
+        const timeout = typeof options.timeout === 'number' ? options.timeout : 4000;
+        if (timeout > 0) {
+            window.setTimeout(() => dismissBanner(banner), timeout);
+        }
+    }
+    return banner;
+}
+
+function dismissBanner(banner) {
+    const container = document.getElementById('banner-container');
+    const target = banner || (container ? container.firstElementChild : null);
+    if (!target) return;
+
+    target.classList.add('closing');
+    window.setTimeout(() => {
+        if (target.parentElement) {
+            target.parentElement.removeChild(target);
+        }
+    }, 300);
 }
 
 // Render quilts in gallery
@@ -113,6 +198,9 @@ function renderQuiltGallery(quilts, galleryId, emptyId, emptyMessage) {
         const charityTag = quilt.isCharity
             ? '<span class="status-tag status-charity">Charity</span>'
             : '';
+        const favoriteTag = quilt.isFavorite
+            ? '<span class="status-tag status-favorite">&#9733; Favorite</span>'
+            : '';
         
         const favoriteLabel = quilt.isFavorite ? 'Unfavorite' : 'Favorite';
         const favoriteIcon = quilt.isFavorite ? '&#9733;' : '&#9734;';
@@ -127,6 +215,7 @@ function renderQuiltGallery(quilts, galleryId, emptyId, emptyMessage) {
                         <div class="status-group">
                             <span class="status-tag status-${quilt.category}">${getCategoryLabel(quilt.category)}</span>
                             ${charityTag}
+                            ${favoriteTag}
                         </div>
                     </div>
                     ${descSnippet ? `<p class="quilt-description">${sanitizeText(descSnippet)}</p>` : ''}
@@ -155,7 +244,10 @@ function displayCharityQuilts() {
 
 // Display favorites
 function displayFavorites() {
-    const favoriteQuilts = allQuilts.filter(q => q.isFavorite);
+    let favoriteQuilts = allQuilts.filter(q => q.isFavorite);
+    if (favoriteCategory !== 'all') {
+        favoriteQuilts = favoriteQuilts.filter(q => q.category === favoriteCategory);
+    }
     renderQuiltGallery(favoriteQuilts, 'favorites-display', 'favorites-empty');
 }
 
@@ -373,10 +465,10 @@ function saveQuiltRecord(quiltData) {
     
     if (existingIndex !== -1) {
         allQuilts[existingIndex] = quiltData;
-        alert(`"${quiltData.title}" has been updated successfully!`);
+        showBanner(`"${quiltData.title}" has been updated successfully!`, { type: 'success' });
     } else {
         allQuilts.unshift(quiltData);
-        alert(`"${quiltData.title}" has been added successfully!`);
+        showBanner(`"${quiltData.title}" has been added successfully!`, { type: 'success' });
     }
     
     saveQuiltData();
@@ -413,15 +505,28 @@ function removeQuilt(quiltId) {
     const quilt = allQuilts.find(q => q.id === quiltId);
     if (!quilt) return;
     
-    if (confirm(`Are you sure you want to delete "${quilt.title}"? This cannot be undone.`)) {
-        allQuilts = allQuilts.filter(q => q.id !== quiltId);
-        saveQuiltData();
-        displayQuilts();
-        displayCharityQuilts();
-        displayFavorites();
-        updateProjectListing();
-        alert('Quilt deleted successfully!');
-    }
+    showBanner(`Are you sure you want to delete "${quilt.title}"? This cannot be undone.`, {
+        type: 'warning',
+        actions: [
+            {
+                label: 'Delete',
+                danger: true,
+                onClick: () => {
+                    allQuilts = allQuilts.filter(q => q.id !== quiltId);
+                    saveQuiltData();
+                    displayQuilts();
+                    displayCharityQuilts();
+                    displayFavorites();
+                    updateProjectListing();
+                    showBanner('Quilt deleted successfully!', { type: 'success' });
+                }
+            },
+            {
+                label: 'Cancel',
+                onClick: () => dismissBanner()
+            }
+        ]
+    });
 }
 
 // Generate unique ID
