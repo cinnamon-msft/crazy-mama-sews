@@ -582,6 +582,8 @@ body {
 
 .project-meta .status-tag {
     margin-left: 0;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.75rem;
 }
 
 .project-date {

@@ -7,15 +7,22 @@ let activeCategory = 'all';
 let favoriteCategory = 'all';
 let isEditing = false;
 let editingQuiltId = null;
+let hasLoadedData = false;
 
 // Initialize application
-document.addEventListener('DOMContentLoaded', function() {
+function initializeApp() {
     loadQuiltData();
     displayQuilts();
     displayCharityQuilts();
     displayFavorites();
     updateProjectListing();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
 
 // Tab switching
 function switchTab(tabName, clickedButton) {
@@ -31,6 +38,7 @@ function switchTab(tabName, clickedButton) {
     if (tabName === 'view') {
         displayQuilts();
     } else if (tabName === 'admin') {
+        closeQuiltEditor();
         updateProjectListing();
     } else if (tabName === 'charity') {
         displayCharityQuilts();
@@ -85,6 +93,13 @@ function loadQuiltData() {
         isCharity: Boolean(quilt.isCharity),
         isFavorite: Boolean(quilt.isFavorite)
     }));
+    hasLoadedData = true;
+}
+
+function ensureQuiltDataLoaded() {
+    if (!hasLoadedData) {
+        loadQuiltData();
+    }
 }
 
 // Save data to localStorage
@@ -419,6 +434,7 @@ function handlePhotoSelect(event) {
 function handleFormSubmit(event) {
     event.preventDefault();
     
+    ensureQuiltDataLoaded();
     const quiltId = document.getElementById('edit-id').value || generateUniqueId();
     const title = document.getElementById('project-title').value.trim();
     const category = document.getElementById('project-category').value;
@@ -485,6 +501,7 @@ function toggleFavorite(quiltId, event) {
         event.stopPropagation();
     }
     
+    ensureQuiltDataLoaded();
     const quilt = allQuilts.find(q => q.id === quiltId);
     if (!quilt) return;
     
@@ -502,6 +519,7 @@ function toggleFavorite(quiltId, event) {
 
 // Remove a quilt
 function removeQuilt(quiltId) {
+    ensureQuiltDataLoaded();
     const quilt = allQuilts.find(q => q.id === quiltId);
     if (!quilt) return;
     
