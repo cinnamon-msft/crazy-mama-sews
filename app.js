@@ -15,14 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Tab switching
-function switchTab(tabName) {
+function switchTab(tabName, clickedButton) {
     const buttons = document.querySelectorAll('.tab-button');
     const sections = document.querySelectorAll('.tab-content');
     
     buttons.forEach(btn => btn.classList.remove('selected'));
     sections.forEach(sec => sec.classList.remove('visible'));
     
-    event.target.classList.add('selected');
+    clickedButton.classList.add('selected');
     document.getElementById(tabName + '-section').classList.add('visible');
     
     if (tabName === 'view') {
@@ -33,12 +33,12 @@ function switchTab(tabName) {
 }
 
 // Category filtering
-function filterByCategory(category) {
+function filterByCategory(category, clickedButton) {
     activeCategory = category;
     
     const buttons = document.querySelectorAll('.category-btn');
     buttons.forEach(btn => btn.classList.remove('selected'));
-    event.target.classList.add('selected');
+    clickedButton.classList.add('selected');
     
     displayQuilts();
 }

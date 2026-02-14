@@ -17,18 +17,18 @@
 
         <nav class="main-nav">
             <div class="content-wrap">
-                <button class="tab-button selected" onclick="switchTab('view')">Browse Quilts</button>
-                <button class="tab-button" onclick="switchTab('admin')">Manage Projects</button>
+                <button class="tab-button selected" onclick="switchTab('view', this)">Browse Quilts</button>
+                <button class="tab-button" onclick="switchTab('admin', this)">Manage Projects</button>
             </div>
         </nav>
 
         <main class="content-wrap">
             <section id="view-section" class="tab-content visible">
                 <div class="category-filters">
-                    <button class="category-btn selected" onclick="filterByCategory('all')">All</button>
-                    <button class="category-btn" onclick="filterByCategory('completed')">Completed</button>
-                    <button class="category-btn" onclick="filterByCategory('wip')">In Progress</button>
-                    <button class="category-btn" onclick="filterByCategory('upcoming')">Due Soon</button>
+                    <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
+                    <button class="category-btn" onclick="filterByCategory('completed', this)">Completed</button>
+                    <button class="category-btn" onclick="filterByCategory('wip', this)">In Progress</button>
+                    <button class="category-btn" onclick="filterByCategory('upcoming', this)">Due Soon</button>
                 </div>
 
                 <div id="quilt-display" class="quilt-gallery"></div>
