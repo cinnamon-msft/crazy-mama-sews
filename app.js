@@ -46,6 +46,10 @@ function switchTab(tabName, clickedButton) {
     if (targetSection) {
         targetSection.classList.add('visible');
     }
+    const viewSelect = document.querySelector('.view-select');
+    if (viewSelect) {
+        viewSelect.classList.toggle('hidden', tabName === 'admin');
+    }
     
     if (tabName === 'view') {
         displayQuilts();
@@ -391,15 +395,7 @@ function openQuiltEditor() {
     editingQuiltId = null;
     
     document.getElementById('editor-heading').textContent = 'Add Quilt Project';
-    document.getElementById('quilt-editor').reset();
-    document.getElementById('edit-id').value = '';
-    document.getElementById('photo-display').innerHTML = '';
-    document.getElementById('project-charity').checked = false;
-    document.getElementById('project-favorite').checked = false;
-    const completedDateInput = document.getElementById('completed-date');
-    if (completedDateInput) {
-        completedDateInput.value = '';
-    }
+    resetQuiltEditorFields();
     document.getElementById('editor-panel').classList.remove('hidden');
     
     document.getElementById('editor-panel').scrollIntoView({ behavior: 'smooth' });
@@ -408,16 +404,44 @@ function openQuiltEditor() {
 // Close quilt editor
 function closeQuiltEditor() {
     document.getElementById('editor-panel').classList.add('hidden');
-    document.getElementById('quilt-editor').reset();
+    resetQuiltEditorFields();
+    isEditing = false;
+    editingQuiltId = null;
+}
+
+function resetQuiltEditorFields() {
+    const form = document.getElementById('quilt-editor');
+    if (form) {
+        form.reset();
+    }
+    document.getElementById('edit-id').value = '';
     document.getElementById('photo-display').innerHTML = '';
+    const photoInput = document.getElementById('photo-upload');
+    if (photoInput) {
+        photoInput.value = '';
+    }
+    const titleInput = document.getElementById('project-title');
+    if (titleInput) {
+        titleInput.value = '';
+    }
+    const categoryInput = document.getElementById('project-category');
+    if (categoryInput) {
+        categoryInput.value = '';
+    }
+    const notesInput = document.getElementById('project-notes');
+    if (notesInput) {
+        notesInput.value = '';
+    }
+    const deadlineInput = document.getElementById('deadline');
+    if (deadlineInput) {
+        deadlineInput.value = '';
+    }
     document.getElementById('project-charity').checked = false;
     document.getElementById('project-favorite').checked = false;
     const completedDateInput = document.getElementById('completed-date');
     if (completedDateInput) {
         completedDateInput.value = '';
     }
-    isEditing = false;
-    editingQuiltId = null;
 }
 
 // Start editing a quilt

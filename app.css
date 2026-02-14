@@ -145,6 +145,13 @@ body {
     font-weight: 700;
 }
 
+.site-title-link {
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 .site-subtitle {
     font-size: 1.2rem;
     opacity: 0.95;
@@ -246,9 +253,15 @@ body {
 .view-select {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 0.8rem;
     flex-wrap: wrap;
+    text-align: right;
+    width: 100%;
+}
+
+.view-select.hidden {
+    display: none;
 }
 
 .view-label {
