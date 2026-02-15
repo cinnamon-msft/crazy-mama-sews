@@ -27,33 +27,31 @@
         <main class="content-wrap">
             <section id="view-section" class="tab-content">
                 <div id="quilt-display" class="quilt-gallery"></div>
-                <div id="empty-message" class="empty-state">No quilts to display. Start by adding your first project!</div>
+                <div id="empty-message" class="empty-state">No projects to show.</div>
             </section>
 
             <section id="charity-section" class="tab-content">
                 <div id="charity-display" class="quilt-gallery"></div>
-                <div id="charity-empty" class="empty-state">No charity quilts yet. Mark projects as charity to see them here.</div>
+                <div id="charity-empty" class="empty-state">No projects to show.</div>
             </section>
 
             <section id="favorites-section" class="tab-content visible">
                 <div id="favorites-display" class="quilt-gallery"></div>
-                <div id="favorites-empty" class="empty-state">No favorites yet. Tap the star to save your favorites.</div>
+                <div id="favorites-empty" class="empty-state">No projects to show.</div>
             </section>
 
             <div class="view-select">
                 <div class="category-filters view-filters">
                     <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
-                    <button class="category-btn" onclick="filterByCategory('not-started', this)">Not Started</button>
                     <button class="category-btn" onclick="filterByCategory('in-progress', this)">In Progress</button>
                     <button class="category-btn" onclick="filterByCategory('completed', this)">Completed</button>
-                    <button class="category-btn" onclick="filterByCategory('upcoming', this)">Due Soon</button>
+                    <button class="category-btn" onclick="filterByCategory('upcoming', this)">Upcoming</button>
                 </div>
                 <div class="category-filters favorite-filters">
                     <button class="category-btn favorite-category-btn selected" onclick="filterFavoritesByCategory('all', this)">All</button>
-                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('not-started', this)">Not Started</button>
                     <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('in-progress', this)">In Progress</button>
                     <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('completed', this)">Completed</button>
-                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('upcoming', this)">Due Soon</button>
+                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('upcoming', this)">Upcoming</button>
                 </div>
                 <div class="category-filters view-dropdown">
                     <select id="view-select" onchange="handleViewSelect(this.value)">
@@ -88,7 +86,7 @@
                             <label for="project-category">Status</label>
                             <select id="project-category">
                                 <option value="">Select status</option>
-                                <option value="not-started">Not Started</option>
+                                <option value="upcoming">Upcoming</option>
                                 <option value="in-progress">In Progress</option>
                                 <option value="completed">Completed</option>
                             </select>

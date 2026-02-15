@@ -100,6 +100,24 @@ function updateViewFilterVisibility(viewName) {
     }
 }
 
+function reapplyCurrentViewFilters() {
+    const select = document.getElementById('view-select');
+    const viewName = select ? select.value : null;
+    if (!viewName) {
+        return;
+    }
+    updateViewFilterVisibility(viewName);
+    if (viewName === 'view') {
+        updateCategoryButtonSelection('.category-btn:not(.favorite-category-btn)', activeCategory);
+        displayQuilts();
+    } else if (viewName === 'favorites') {
+        updateCategoryButtonSelection('.favorite-category-btn', favoriteCategory);
+        displayFavorites();
+    } else if (viewName === 'charity') {
+        displayCharityQuilts();
+    }
+}
+
 function updateCategoryButtonSelection(buttonSelector, category, clickedButton) {
     const buttons = document.querySelectorAll(buttonSelector);
     buttons.forEach(btn => btn.classList.remove('selected'));
@@ -147,7 +165,7 @@ function loadQuiltData() {
     }
 
     allQuilts = allQuilts.map(quilt => {
-        const normalizedCategory = normalizeCategory(quilt.category) || 'not-started';
+        const normalizedCategory = normalizeCategory(quilt.category) || 'upcoming';
         return {
             ...quilt,
             category: normalizedCategory,
@@ -303,10 +321,11 @@ function filterQuiltsByCategory(quilts, category) {
     if (category === 'all') {
         return quilts;
     }
-    if (category === 'upcoming') {
-        return quilts.filter(quilt => isDueSoon(quilt));
+    const normalizedCategory = normalizeCategory(category) || 'upcoming';
+    if (normalizedCategory === 'upcoming') {
+        return quilts.filter(quilt => isDueSoon(quilt) || normalizeCategory(quilt.category) === 'upcoming');
     }
-    return quilts.filter(quilt => normalizeCategory(quilt.category) === category);
+    return quilts.filter(quilt => normalizeCategory(quilt.category) === normalizedCategory);
 }
 
 // Display quilts in gallery
@@ -333,7 +352,7 @@ function updateProjectListing() {
     const listing = document.getElementById('project-listing');
     
     if (allQuilts.length === 0) {
-        listing.innerHTML = '<p class="empty-state" style="display: block;">No projects yet. Click "New Quilt" to add your first project!</p>';
+        listing.innerHTML = '<p class="empty-state" style="display: block;">No projects to show.</p>';
         return;
     }
     
@@ -568,7 +587,7 @@ function handleFormSubmit(event) {
         return;
     }
 
-    category = normalizeCategory(category) || 'not-started';
+    category = normalizeCategory(category) || 'upcoming';
 
     if (category === 'completed' && isFutureDate(deadline)) {
         showBanner('Completed projects cannot have a future due date. Update the due date or status to continue.', { type: 'error' });
@@ -626,6 +645,7 @@ function saveQuiltRecord(quiltData) {
     displayQuilts();
     displayCharityQuilts();
     displayFavorites();
+    reapplyCurrentViewFilters();
     updateProjectListing();
     switchTab('admin');
 }
@@ -646,6 +666,7 @@ function toggleFavorite(quiltId, event) {
     displayCharityQuilts();
     displayFavorites();
     updateProjectListing();
+    reapplyCurrentViewFilters();
     
     if (isEditing && editingQuiltId === quiltId) {
         document.getElementById('project-favorite').checked = quilt.isFavorite;
@@ -671,6 +692,7 @@ function removeQuilt(quiltId) {
                     displayCharityQuilts();
                     displayFavorites();
                     updateProjectListing();
+                    reapplyCurrentViewFilters();
                     showBanner('Quilt deleted successfully!', { type: 'success' });
                 }
             },
@@ -694,8 +716,8 @@ function normalizeCategory(category) {
     if (category === 'wip') {
         return 'in-progress';
     }
-    if (category === 'upcoming') {
-        return 'not-started';
+    if (category === 'not-started') {
+        return 'upcoming';
     }
     return category;
 }
@@ -704,7 +726,7 @@ function normalizeCategory(category) {
 function getCategoryLabel(category) {
     const normalized = normalizeCategory(category);
     const labels = {
-        'not-started': 'Not Started',
+        'upcoming': 'Upcoming',
         'in-progress': 'In Progress',
         'completed': 'Completed'
     };
@@ -720,7 +742,7 @@ function getCategoryClass(category) {
         return '';
     }
     const classMap = {
-        'not-started': 'upcoming',
+        'upcoming': 'upcoming',
         'in-progress': 'wip',
         'completed': 'completed'
     };
