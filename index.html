@@ -43,14 +43,16 @@
             <div class="view-select">
                 <div class="category-filters view-filters">
                     <button class="category-btn selected" onclick="filterByCategory('all', this)">All</button>
+                    <button class="category-btn" onclick="filterByCategory('not-started', this)">Not Started</button>
+                    <button class="category-btn" onclick="filterByCategory('in-progress', this)">In Progress</button>
                     <button class="category-btn" onclick="filterByCategory('completed', this)">Completed</button>
-                    <button class="category-btn" onclick="filterByCategory('wip', this)">In Progress</button>
                     <button class="category-btn" onclick="filterByCategory('upcoming', this)">Due Soon</button>
                 </div>
                 <div class="category-filters favorite-filters">
                     <button class="category-btn favorite-category-btn selected" onclick="filterFavoritesByCategory('all', this)">All</button>
+                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('not-started', this)">Not Started</button>
+                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('in-progress', this)">In Progress</button>
                     <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('completed', this)">Completed</button>
-                    <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('wip', this)">In Progress</button>
                     <button class="category-btn favorite-category-btn" onclick="filterFavoritesByCategory('upcoming', this)">Due Soon</button>
                 </div>
                 <div class="category-filters view-dropdown">
@@ -86,9 +88,9 @@
                             <label for="project-category">Status</label>
                             <select id="project-category">
                                 <option value="">Select status</option>
-                                <option value="wip">In Progress</option>
+                                <option value="not-started">Not Started</option>
+                                <option value="in-progress">In Progress</option>
                                 <option value="completed">Completed</option>
-                                <option value="upcoming">Due Soon</option>
                             </select>
                         </div>
 

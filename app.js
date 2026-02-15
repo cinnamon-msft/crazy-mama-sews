@@ -52,6 +52,7 @@ function switchTab(tabName, clickedButton) {
     if (viewSelect) {
         viewSelect.classList.toggle('hidden', tabName === 'admin' || tabName === 'new-quilt');
     }
+    updateViewFilterVisibility(tabName);
     const projectListing = document.getElementById('project-listing');
     if (projectListing) {
         projectListing.style.display = tabName === 'new-quilt' ? 'none' : '';
@@ -77,29 +78,54 @@ function handleViewSelect(viewName) {
         select.value = viewName;
     }
     switchTab(viewName, null);
+    if (viewName === 'view') {
+        updateCategoryButtonSelection('.category-btn:not(.favorite-category-btn)', activeCategory);
+        displayQuilts();
+    } else if (viewName === 'favorites') {
+        updateCategoryButtonSelection('.favorite-category-btn', favoriteCategory);
+        displayFavorites();
+    } else if (viewName === 'charity') {
+        displayCharityQuilts();
+    }
+}
+
+function updateViewFilterVisibility(viewName) {
+    const viewFilters = document.querySelector('.view-select .view-filters');
+    const favoriteFilters = document.querySelector('.view-select .favorite-filters');
+    if (viewFilters) {
+        viewFilters.style.display = viewName === 'view' ? 'flex' : 'none';
+    }
+    if (favoriteFilters) {
+        favoriteFilters.style.display = viewName === 'favorites' ? 'flex' : 'none';
+    }
+}
+
+function updateCategoryButtonSelection(buttonSelector, category, clickedButton) {
+    const buttons = document.querySelectorAll(buttonSelector);
+    buttons.forEach(btn => btn.classList.remove('selected'));
+    let targetButton = clickedButton;
+    if (!targetButton && category) {
+        targetButton = Array.from(buttons).find(btn => {
+            const handler = btn.getAttribute('onclick');
+            return handler && handler.includes(`'${category}'`);
+        });
+    }
+    if (targetButton) {
+        targetButton.classList.add('selected');
+    }
 }
 
 // Category filtering
 function filterByCategory(category, clickedButton) {
     activeCategory = category;
-    
-    const buttons = document.querySelectorAll('.category-btn:not(.favorite-category-btn)');
-    buttons.forEach(btn => btn.classList.remove('selected'));
-    clickedButton.classList.add('selected');
-    
+    updateCategoryButtonSelection('.category-btn:not(.favorite-category-btn)', category, clickedButton);
     displayQuilts();
 }
 
 // Favorite category filtering
 function filterFavoritesByCategory(category, clickedButton) {
     favoriteCategory = category;
-    
-    const buttons = document.querySelectorAll('.favorite-category-btn');
-    buttons.forEach(btn => btn.classList.remove('selected'));
-    if (clickedButton) {
-        clickedButton.classList.add('selected');
-    }
-    
+    updateCategoryButtonSelection('.favorite-category-btn', category, clickedButton);
     displayFavorites();
 }
 
@@ -120,11 +146,15 @@ function loadQuiltData() {
         allQuilts = [];
     }
 
-    allQuilts = allQuilts.map(quilt => ({
-        ...quilt,
-        isCharity: Boolean(quilt.isCharity),
-        isFavorite: Boolean(quilt.isFavorite)
-    }));
+    allQuilts = allQuilts.map(quilt => {
+        const normalizedCategory = normalizeCategory(quilt.category) || 'not-started';
+        return {
+            ...quilt,
+            category: normalizedCategory,
+            isCharity: Boolean(quilt.isCharity),
+            isFavorite: Boolean(quilt.isFavorite)
+        };
+    });
     hasLoadedData = true;
 }
 
@@ -257,7 +287,7 @@ function renderQuiltGallery(quilts, galleryId, emptyId, emptyMessage) {
                     <div class="quilt-header">
                         <h3 class="quilt-title">${sanitizeText(quilt.title)}</h3>
                         <div class="status-group">
-                            <span class="status-tag status-${quilt.category}">${getCategoryLabel(quilt.category)}</span>
+                            <span class="status-tag ${getCategoryClass(quilt.category)}">${getCategoryLabel(quilt.category)}</span>
                             ${charityTag}
                         </div>
                     </div>
@@ -269,13 +299,19 @@ function renderQuiltGallery(quilts, galleryId, emptyId, emptyMessage) {
     }).join('');
 }
 
+function filterQuiltsByCategory(quilts, category) {
+    if (category === 'all') {
+        return quilts;
+    }
+    if (category === 'upcoming') {
+        return quilts.filter(quilt => isDueSoon(quilt));
+    }
+    return quilts.filter(quilt => normalizeCategory(quilt.category) === category);
+}
+
 // Display quilts in gallery
 function displayQuilts() {
-    let filtered = allQuilts;
-    if (activeCategory !== 'all') {
-        filtered = allQuilts.filter(q => q.category === activeCategory);
-    }
-    
+    const filtered = filterQuiltsByCategory(allQuilts, activeCategory);
     renderQuiltGallery(filtered, 'quilt-display', 'empty-message');
 }
 
@@ -288,9 +324,7 @@ function displayCharityQuilts() {
 // Display favorites
 function displayFavorites() {
     let favoriteQuilts = allQuilts.filter(q => q.isFavorite);
-    if (favoriteCategory !== 'all') {
-        favoriteQuilts = favoriteQuilts.filter(q => q.category === favoriteCategory);
-    }
+    favoriteQuilts = filterQuiltsByCategory(favoriteQuilts, favoriteCategory);
     renderQuiltGallery(favoriteQuilts, 'favorites-display', 'favorites-empty');
 }
 
@@ -325,7 +359,7 @@ function updateProjectListing() {
                     <div class="project-data">
                         <h4>${sanitizeText(quilt.title)}</h4>
                         <p class="project-meta">
-                            <span class="status-tag status-${quilt.category}">${getCategoryLabel(quilt.category)}</span>
+                            <span class="status-tag ${getCategoryClass(quilt.category)}">${getCategoryLabel(quilt.category)}</span>
                             ${charityTag}
                             ${dateInfo}
                         </p>
@@ -380,7 +414,7 @@ function showDetails(quiltId) {
     content.innerHTML = `
         ${photoHtml}
         <h2>${sanitizeText(quilt.title)}</h2>
-        <p><span class="status-tag status-${quilt.category}">${getCategoryLabel(quilt.category)}</span></p>
+        <p><span class="status-tag ${getCategoryClass(quilt.category)}">${getCategoryLabel(quilt.category)}</span></p>
         ${favoriteHtml}
         ${charityHtml}
         ${notesHtml}
@@ -510,10 +544,12 @@ function handleFormSubmit(event) {
     
     ensureQuiltDataLoaded();
     const quiltId = document.getElementById('edit-id').value || generateUniqueId();
-    const title = document.getElementById('project-title').value.trim();
-    const category = document.getElementById('project-category').value;
+    const titleInput = document.getElementById('project-title');
+    const title = titleInput ? titleInput.value.trim() : '';
+    let category = document.getElementById('project-category').value;
     const notes = document.getElementById('project-notes').value.trim();
-    const deadline = document.getElementById('deadline').value;
+    const deadlineInput = document.getElementById('deadline');
+    let deadline = deadlineInput ? deadlineInput.value : '';
     const photoInput = document.getElementById('photo-upload');
     const isCharity = document.getElementById('project-charity').checked;
     const isFavorite = document.getElementById('project-favorite').checked;
@@ -523,6 +559,24 @@ function handleFormSubmit(event) {
         ? completedDateInput.value
         : (existing ? existing.completedDate || '' : '');
     const timestamp = existing ? existing.timestamp : new Date().toISOString().split('T')[0];
+
+    if (!title) {
+        showBanner('Please enter a project name before saving.', { type: 'error' });
+        if (titleInput) {
+            titleInput.focus();
+        }
+        return;
+    }
+
+    category = normalizeCategory(category) || 'not-started';
+
+    if (category === 'completed' && isFutureDate(deadline)) {
+        showBanner('Completed projects cannot have a future due date. Update the due date or status to continue.', { type: 'error' });
+        if (deadlineInput) {
+            deadlineInput.focus();
+        }
+        return;
+    }
     
     const quiltData = {
         id: quiltId,
@@ -633,14 +687,66 @@ function generateUniqueId() {
     return 'q_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
 }
 
+function normalizeCategory(category) {
+    if (!category) {
+        return '';
+    }
+    if (category === 'wip') {
+        return 'in-progress';
+    }
+    if (category === 'upcoming') {
+        return 'not-started';
+    }
+    return category;
+}
+
 // Get category display label
 function getCategoryLabel(category) {
+    const normalized = normalizeCategory(category);
     const labels = {
-        'completed': 'Completed',
-        'wip': 'In Progress',
-        'upcoming': 'Due Soon'
+        'not-started': 'Not Started',
+        'in-progress': 'In Progress',
+        'completed': 'Completed'
     };
-    return labels[category] || category;
+    if (!normalized) {
+        return 'No Status';
+    }
+    return labels[normalized] || normalized;
+}
+
+function getCategoryClass(category) {
+    const normalized = normalizeCategory(category);
+    if (!normalized) {
+        return '';
+    }
+    const classMap = {
+        'not-started': 'upcoming',
+        'in-progress': 'wip',
+        'completed': 'completed'
+    };
+    const mappedClass = classMap[normalized] || normalized;
+    return `status-${mappedClass}`;
+}
+
+function getTodayDate() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+}
+
+function isFutureDate(dateString) {
+    if (!dateString) {
+        return false;
+    }
+    const date = new Date(dateString + 'T00:00:00');
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+    return date > getTodayDate();
+}
+
+function isDueSoon(quilt) {
+    return normalizeCategory(quilt.category) !== 'completed' && isFutureDate(quilt.deadline);
 }
 
 // Format date for display
