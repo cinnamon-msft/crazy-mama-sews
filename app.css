@@ -643,6 +643,29 @@ main.content-wrap > .tab-content {
     margin-top: 2.5rem;
 }
 
+.hidden {
+    display: none;
+}
+
+.sync-panel {
+    background-color: var(--white-pure);
+    padding: 1.8rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow-light);
+    margin-bottom: 2.5rem;
+}
+
+.sync-panel h3 {
+    margin-bottom: 0.6rem;
+    color: var(--text-dark);
+    font-size: 1.3rem;
+}
+
+.helper-text {
+    color: #666;
+    margin-bottom: 1.2rem;
+}
+
 .project-list {
     display: flex;
     flex-direction: column;
@@ -857,6 +880,17 @@ main.content-wrap > .tab-content {
         font-size: 2rem;
     }
 
+    .site-header .header-layout {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .site-header .header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
     .quilt-gallery {
         grid-template-columns: 1fr;
     }
@@ -901,6 +935,14 @@ main.content-wrap > .tab-content {
         width: 100%;
     }
 
+    .view-select {
+        justify-content: center;
+    }
+
+    .view-select .view-dropdown {
+        margin-left: 0;
+    }
+
     .popup-box {
         padding: 1.5rem;
         margin: 5% auto;
@@ -908,9 +950,27 @@ main.content-wrap > .tab-content {
 }
 
 @media (max-width: 480px) {
+    .site-header .manage-projects-btn {
+        width: 100%;
+    }
+
     .category-btn {
         font-size: 0.9rem;
         padding: 0.5rem 1.2rem;
+    }
+
+    .view-select {
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    .view-select .category-filters {
+        width: 100%;
+        text-align: left;
+    }
+
+    .view-select .view-dropdown {
+        width: 100%;
     }
 
     .main-nav .content-wrap {

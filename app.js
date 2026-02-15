@@ -165,7 +165,7 @@ function loadQuiltData() {
     }
 
     allQuilts = allQuilts.map(quilt => {
-        const normalizedCategory = normalizeCategory(quilt.category) || 'upcoming';
+        const normalizedCategory = normalizeCategory(quilt.category);
         return {
             ...quilt,
             category: normalizedCategory,
@@ -185,6 +185,129 @@ function ensureQuiltDataLoaded() {
 // Save data to localStorage
 function saveQuiltData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(allQuilts));
+}
+
+function exportQuilts() {
+    ensureQuiltDataLoaded();
+    const payload = JSON.stringify(allQuilts, null, 2);
+    const blob = new Blob([payload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `crazymama-quilts-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showBanner('Backup downloaded successfully.', { type: 'success' });
+}
+
+function handleImportFile(event) {
+    const input = event ? event.target : null;
+    const file = input && input.files ? input.files[0] : null;
+    if (!file) {
+        showBanner('Please select a quilt data file to import.', { type: 'error' });
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        let imported;
+        try {
+            imported = JSON.parse(e.target.result);
+        } catch (error) {
+            showBanner('Import failed. The file does not contain valid JSON.', { type: 'error' });
+            if (input) {
+                input.value = '';
+            }
+            return;
+        }
+
+        if (!Array.isArray(imported)) {
+            showBanner('Import failed. Expected a list of quilt projects.', { type: 'error' });
+            if (input) {
+                input.value = '';
+            }
+            return;
+        }
+
+        const todayStamp = new Date().toISOString().split('T')[0];
+        let skipped = 0;
+        const normalized = imported.map(entry => {
+            const source = entry && typeof entry === 'object' ? entry : {};
+            const title = typeof source.title === 'string' ? source.title.trim() : '';
+            if (!title) {
+                skipped += 1;
+                return null;
+            }
+            const category = normalizeCategory(typeof source.category === 'string' ? source.category : '') || 'upcoming';
+            const notes = typeof source.notes === 'string' ? source.notes : '';
+            let deadline = typeof source.deadline === 'string' ? source.deadline : '';
+            if (category === 'completed' && isFutureDate(deadline)) {
+                deadline = '';
+            }
+            const completedDate = typeof source.completedDate === 'string' ? source.completedDate : '';
+            const photo = typeof source.photo === 'string' ? source.photo : null;
+            const timestamp = typeof source.timestamp === 'string' && source.timestamp ? source.timestamp : todayStamp;
+            const isCharity = Boolean(source.isCharity);
+            const isFavorite = Boolean(source.isFavorite);
+            const id = typeof source.id === 'string' && source.id.trim() ? source.id.trim() : generateUniqueId();
+
+            return {
+                id: id,
+                title: title,
+                category: category,
+                notes: notes,
+                deadline: deadline,
+                completedDate: completedDate,
+                photo: photo,
+                isCharity: isCharity,
+                isFavorite: isFavorite,
+                timestamp: timestamp
+            };
+        }).filter(Boolean);
+
+        if (normalized.length === 0) {
+            showBanner('No valid projects found in that backup.', { type: 'error' });
+            if (input) {
+                input.value = '';
+            }
+            return;
+        }
+
+        allQuilts = normalized;
+        hasLoadedData = true;
+        saveQuiltData();
+        displayQuilts();
+        displayCharityQuilts();
+        displayFavorites();
+        updateProjectListing();
+        const hasFavorites = allQuilts.some(quilt => quilt.isFavorite);
+        const shouldShowAll = allQuilts.length > 0 && !hasFavorites;
+        if (shouldShowAll) {
+            handleViewSelect('view');
+        } else {
+            reapplyCurrentViewFilters();
+        }
+        if (skipped > 0) {
+            showBanner(`Imported ${normalized.length} project${normalized.length === 1 ? '' : 's'}. ${skipped} item${skipped === 1 ? '' : 's'} skipped.`, { type: 'warning' });
+        } else {
+            showBanner(`Imported ${normalized.length} project${normalized.length === 1 ? '' : 's'} successfully.`, { type: 'success' });
+        }
+
+        if (input) {
+            input.value = '';
+        }
+    };
+
+    reader.onerror = function() {
+        showBanner('Import failed. Unable to read the selected file.', { type: 'error' });
+        if (input) {
+            input.value = '';
+        }
+    };
+
+    reader.readAsText(file);
 }
 
 // Banner notifications
@@ -321,7 +444,7 @@ function filterQuiltsByCategory(quilts, category) {
     if (category === 'all') {
         return quilts;
     }
-    const normalizedCategory = normalizeCategory(category) || 'upcoming';
+    const normalizedCategory = normalizeCategory(category);
     if (normalizedCategory === 'upcoming') {
         return quilts.filter(quilt => isDueSoon(quilt) || normalizeCategory(quilt.category) === 'upcoming');
     }
@@ -587,7 +710,7 @@ function handleFormSubmit(event) {
         return;
     }
 
-    category = normalizeCategory(category) || 'upcoming';
+    category = normalizeCategory(category);
 
     if (category === 'completed' && isFutureDate(deadline)) {
         showBanner('Completed projects cannot have a future due date. Update the due date or status to continue.', { type: 'error' });
@@ -711,7 +834,7 @@ function generateUniqueId() {
 
 function normalizeCategory(category) {
     if (!category) {
-        return '';
+        return 'upcoming';
     }
     if (category === 'wip') {
         return 'in-progress';
@@ -730,9 +853,6 @@ function getCategoryLabel(category) {
         'in-progress': 'In Progress',
         'completed': 'Completed'
     };
-    if (!normalized) {
-        return 'No Status';
-    }
     return labels[normalized] || normalized;
 }
 

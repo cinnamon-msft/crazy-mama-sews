@@ -7,7 +7,7 @@ A simple, easy-to-use website for tracking quilt projects. Keep track of complet
 ✨ **Easy Project Management**
 - Add new quilt projects with just a few clicks
 - Upload photos of your quilts
-- Track project status (Completed, In Progress, Due Soon)
+- Track project status (Upcoming, In Progress, Completed)
 - Add descriptions and due dates
 - Edit or delete projects anytime
 - Mark quilts as charity projects
@@ -37,7 +37,7 @@ A simple, easy-to-use website for tracking quilt projects. Keep track of complet
 2. Click the **"+ New Quilt"** button
 3. Fill in the details:
    - **Project Name**: Give your quilt a name (required)
-   - **Status**: Choose Completed, In Progress, or Due Soon
+   - **Status**: Choose Upcoming, In Progress, or Completed
    - **Charity Quilt**: Mark if the quilt is for donation (optional)
    - **Favorite**: Add it to your favorites list (optional)
    - **Notes**: Add any details about the quilt
@@ -48,7 +48,7 @@ A simple, easy-to-use website for tracking quilt projects. Keep track of complet
 ### Viewing Your Quilts
 
 1. Click the **"Browse Quilts"** tab
-2. Use the filter buttons (All, Completed, In Progress, Due Soon) to organize your view
+2. Use the filter buttons (All, Upcoming, In Progress, Completed) to organize your view
 3. Click on any quilt card to see full details
 4. Use the **"Charity Quilts"** and **"Favorites"** tabs to view those lists
 
@@ -95,19 +95,11 @@ You can also deploy to:
 
 ## Data Backup
 
-Your quilt data is stored in your browser's localStorage. To backup your data:
+Your quilt data is stored in your browser's localStorage. To export and import data:
 
-1. Open the browser's Developer Console (F12)
-2. Go to the "Application" or "Storage" tab
-3. Find "Local Storage"
-4. Look for the `crazymama_quilts` key
-5. Copy the value and save it to a text file
-
-To restore:
-1. Open Developer Console
-2. Go to "Console" tab
-3. Type: `localStorage.setItem('crazymama_quilts', 'PASTE_YOUR_BACKUP_HERE')`
-4. Refresh the page
+1. Open **Manage Projects** and find the **Sync & Backup** panel
+2. Click **"Download Backup"** to save the JSON file (store it in a cloud drive if you want to sync across devices)
+3. To restore, click **"Import Backup"** and select the saved JSON file
 
 ## Tips
 

@@ -68,6 +68,16 @@
                     <button class="action-btn primary" onclick="switchTab('new-quilt'); openQuiltEditor()">+ New Quilt</button>
                 </div>
 
+                <div class="sync-panel">
+                    <h3>Sync &amp; Backup</h3>
+                    <p class="helper-text">Save a backup to a cloud drive (OneDrive, Google Drive, or iCloud) to sync across devices.</p>
+                    <div class="button-row">
+                        <button class="action-btn primary" type="button" onclick="exportQuilts()">Download Backup</button>
+                        <button class="action-btn secondary" type="button" onclick="document.getElementById('import-quilts').click()">Import Backup</button>
+                    </div>
+                    <input type="file" id="import-quilts" class="hidden" accept="application/json" onchange="handleImportFile(event)">
+                </div>
+
                 <div id="project-listing" class="project-list"></div>
             </section>
 
